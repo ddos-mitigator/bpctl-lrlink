@@ -13534,8 +13534,10 @@ static int user_on_off(const void __user *buffer, size_t count)
     return 0;
 }
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0))
-#define PDE_DATA(inode) ((inode)->i_private)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0))
+#ifndef PDE_DATA
+#define PDE_DATA pde_data
+#endif
 #endif
 
 
