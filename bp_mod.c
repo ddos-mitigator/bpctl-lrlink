@@ -720,8 +720,8 @@ static int i2c_outb(bpctl_dev_t *pslcm_dev, unsigned char c)
 	}
 	sdahi(pslcm_dev);
 	if (sclhi(pslcm_dev) < 0) { /* timeout */
-		printk("bpmod: i2c_outb: 0x%x, "
-		    "timeout at ack\n", (int)c);
+		/*printk("bpmod: i2c_outb: 0x%02x, "
+		    "timeout at ack\n", (int)c);*/
 		return -1;
 	}
 
@@ -729,7 +729,7 @@ static int i2c_outb(bpctl_dev_t *pslcm_dev, unsigned char c)
 	 * NAK (usually to report problems with the data we wrote).
 	 */
 	 ack = !getsda(pslcm_dev);    /* ack: sda is pulled low -> success */
-	 printk("bpmod: i2c_outb: 0x%02x %s\n", (int)c, ack ? "A" : "NA");
+	 /*printk("bpmod: i2c_outb: 0x%02x %s\n", (int)c, ack ? "A" : "NA");*/
 
 	scllo(pslcm_dev);
 	return ack;
@@ -861,18 +861,18 @@ static int try_address(bpctl_dev_t *pslcm_dev,
 		ret = i2c_outb(pslcm_dev, addr);
 		if (ret == 1 || i == retries)
 			break;
-		printk("bpmod: emitting stop condition\n");
+		/*printk("bpmod: emitting stop condition\n");*/
 		i2c_stop(pslcm_dev);
 		udelay(TIME_CLK);
 		yield();
-		printk("bpmod: emitting start condition\n");
+		/*printk("bpmod: emitting start condition\n");*/
 		i2c_start(pslcm_dev);
 	}
-	if (i && ret)
+	/*if (i && ret)
 		printk("bpmod: Used %d tries to %s client at "
 			"0x%x: %s\n", i + 1,
 			addr & 1 ? "read from" : "write to", addr >> 1,
-			ret == 1 ? "success" : "failed, timeout?");
+			ret == 1 ? "success" : "failed, timeout?");*/
 	return ret;
 }
 
@@ -1147,14 +1147,14 @@ int bp_cmd_request(bpctl_dev_t *pbpctl_dev, bp_cmd_t *bp_cmd_buf, bp_cmd_rsp_t *
     int ret_val;
 	byte data[120]; 
 	int try_num = 2;
-	int num = 0;
+	//int num = 0;
 	atomic_set(&pbpctl_dev->wdt_busy,1); 
 	/*
 	 * Send command
 	 */
      while (try_num--) {
-		num++;
-		printk("The %d time \n",num);
+		//num++;
+		//printk("The %d time \n",num);
 		memset(bp_rsp_buf, 0, sizeof(bp_cmd_rsp_t));
 
     	memcpy(&data[0], bp_cmd_buf, sizeof(bp_cmd_t));
@@ -1166,7 +1166,7 @@ int bp_cmd_request(bpctl_dev_t *pbpctl_dev, bp_cmd_t *bp_cmd_buf, bp_cmd_rsp_t *
 		    continue;
 		    //return 0;
 		}
-		printk("set_bp_bytes_fn \n");
+		//printk("set_bp_bytes_fn \n");
 #if 1
   	/*
 	 * Receive replay
@@ -1188,7 +1188,7 @@ int bp_cmd_request(bpctl_dev_t *pbpctl_dev, bp_cmd_t *bp_cmd_buf, bp_cmd_rsp_t *
         if(pbpctl_dev->bp_sp1000_2s){
             //printk("MJ before change bp_rsp_buf->rsp.rsp_id=%d \n",bp_rsp_buf->rsp.rsp_id);
             bp_rsp_buf->rsp.rsp_id = BP_ERR_OK;
-            printk("MJ before after bp_rsp_buf->rsp.rsp_id=%d \n",bp_rsp_buf->rsp.rsp_id);
+            //printk("MJ before after bp_rsp_buf->rsp.rsp_id=%d \n",bp_rsp_buf->rsp.rsp_id);
         }
 
 #if 0 
@@ -1205,7 +1205,7 @@ int bp_cmd_request(bpctl_dev_t *pbpctl_dev, bp_cmd_t *bp_cmd_buf, bp_cmd_rsp_t *
 		}
 
 		if (bp_rsp_buf->rsp.rsp_id != BP_ERR_OK){
-			printk("bp_rsp_buf->rsp.rsp_id!=BP_ERR_OK \n");
+			//printk("bp_rsp_buf->rsp.rsp_id!=BP_ERR_OK \n");
 			continue;
 		}
 		
@@ -1544,7 +1544,7 @@ static int read_pulse(bpctl_dev_t *pbpctl_dev, unsigned int ctrl_ext ,unsigned c
 
         } else if ((pbpctl_dev->bp_fiber5)||(pbpctl_dev->bp_i80)) {
             ctrl_ext = BPCTL_READ_REG(pbpctl_dev, CTRL);
-		printk("%d BPCTL_READ_REG ctrl_ext:0x00000 = %d \n",i,ctrl_ext); 
+		//printk("%d BPCTL_READ_REG ctrl_ext:0x00000 = %d \n",i,ctrl_ext); 
         } else if (pbpctl_dev->bp_540) {
             ctrl_ext = BP10G_READ_REG(pbpctl_dev, ESDP);
         } else if (pbpctl_dev->bp_10gb)
@@ -1568,7 +1568,7 @@ static int read_pulse(bpctl_dev_t *pbpctl_dev, unsigned int ctrl_ext ,unsigned c
         } else if (pbpctl_dev->bp_i80) {
             if (ctrl_ext & BPCTLI_CTRL_EXT_MDIO_DATA80){
                 ctrl_val |= 1<<i;
-		printk("%d ctrl_val = %d \n",i,ctrl_val); 
+		//printk("%d ctrl_val = %d \n",i,ctrl_val); 
 	}
         } else if (pbpctl_dev->bp_540) {
             if (ctrl_ext & BP540_MDIO_DATA)
@@ -1769,7 +1769,7 @@ static int read_reg(bpctl_dev_t *pbpctl_dev, unsigned char addr){
     } else if (pbpctl_dev->bp_i80) {
         ctrl_ext = BPCTL_READ_REG(pbpctl_dev, CTRL);
         ctrl = BPCTL_READ_REG(pbpctl_dev, CTRL_EXT);
-	printk("1 ctrl_ext:0x00000 = %d; ctrl:0x00018 = %d \n",ctrl_ext,ctrl); 
+	//printk("1 ctrl_ext:0x00000 = %d; ctrl:0x00018 = %d \n",ctrl_ext,ctrl); 
 
         BPCTL_BP_WRITE_REG(pbpctl_dev, CTRL, ((ctrl_ext | 
                                                BPCTLI_CTRL_EXT_MDIO_DIR80)&~BPCTLI_CTRL_EXT_MDIO_DATA80));
@@ -1884,7 +1884,7 @@ static int read_reg(bpctl_dev_t *pbpctl_dev, unsigned char addr){
     usec_delay_bp(PULSE_TIME);
 
     ctrl_value= read_pulse(pbpctl_dev,ctrl_ext,RD_DATA_LEN);
-	printk("ctrl_value = %d \n",ctrl_value); 
+	//printk("ctrl_value = %d \n",ctrl_value); 
     if (pbpctl_dev->bp_10g9) {
         ctrl_ext=BP10G_READ_REG(pbpctl_dev,I2CCTL);
         ctrl= BP10G_READ_REG(pbpctl_dev_c, ESDP);
@@ -5010,7 +5010,7 @@ void bypass_caps_init (bpctl_dev_t *pbpctl_dev){
                     if ((bypass_sign_check(pbpctl_dev))!=1) {
                         if(pbpctl_dev->subdevice != 0x8030){
                             pbpctl_dev->bp_caps=0;
-				   printk("pbpctl_dev->bp_caps=0 \n");
+				   //printk("pbpctl_dev->bp_caps=0 \n");
                             return;
                         }
                         
@@ -5337,7 +5337,7 @@ int is_bypass_fn(bpctl_dev_t *pbpctl_dev){
 
     if (pbpctl_dev->lr_bp8599) {
 		return((pbpctl_dev->func_p == 0 || (pbpctl_dev->func == 2)) ? 1:0);
-        printk("MJ func: %d, func_p: %d \n", pbpctl_dev->func, pbpctl_dev->func_p);
+        //printk("MJ func: %d, func_p: %d \n", pbpctl_dev->func, pbpctl_dev->func_p);
 	}
 		
     return(((pbpctl_dev->func_p==0)||(pbpctl_dev->func_p==2))?1:0);
@@ -5348,7 +5348,7 @@ int set_bypass_fn (bpctl_dev_t *pbpctl_dev, int bypass_mode){
     int ret=BP_NOT_CAP;
 
 	if (!(pbpctl_dev->bp_caps & BP_CAP)){
-		printk("MJ pbpctl_dev->bp_caps & BP_CAP = %d \t pbpctl_dev->bp_caps = %d  \n",pbpctl_dev->bp_caps & BP_CAP,pbpctl_dev->bp_caps);
+		//printk("MJ pbpctl_dev->bp_caps & BP_CAP = %d \t pbpctl_dev->bp_caps = %d  \n",pbpctl_dev->bp_caps & BP_CAP,pbpctl_dev->bp_caps);
 		return BP_NOT_CAP;
 	}
     // TODO_4  根据设备不同选择路径
@@ -5363,17 +5363,17 @@ int set_bypass_fn (bpctl_dev_t *pbpctl_dev, int bypass_mode){
 		memset(&bp_rsp_buf, 0, sizeof(bp_cmd_rsp_t));
 		bp_cmd_buf.cmd.cmd_dev_num= (pbpctl_dev->func_p == 0)? 0:1;//1
 		bp_cmd_buf.cmd.cmd_id=CMD_SET_BYPASS;//3
-		printk("bp_cmd_buf.cmd.cmd_data.bypass_mode=%d \n",bp_cmd_buf.cmd.cmd_data.bypass_mode);
+		//printk("bp_cmd_buf.cmd.cmd_data.bypass_mode=%d \n",bp_cmd_buf.cmd.cmd_data.bypass_mode);
 		bp_cmd_buf.cmd.cmd_data.bypass_mode=bypass_mode;//?1:0;
 
 		if (!(pbpctl_dev_c=get_status_port_fn(pbpctl_dev))){
-			printk("MJ pbpctl_dev_c=NULL \n");
+			//printk("MJ pbpctl_dev_c=NULL \n");
 			return -1;
 		}
 
 		if(bp_cmd_request(pbpctl_dev_c, &bp_cmd_buf, &bp_rsp_buf)) {
 			if (bp_rsp_buf.rsp.rsp_id == BP_ERR_OK) {
-               printk("bp_cmd_request \n");
+               //printk("bp_cmd_request \n");
 				ret=0;
 			}
 		}
@@ -5777,11 +5777,11 @@ static void bp_write_reg(bpctl_dev_t* pbpctl_dev, unsigned char value, unsigned 
 {
     unsigned long flags;
     uint32_t ctrl_ext = 0;//, ctrl = 0;
-    printk("MJ bp_write_reg down \n");
+    //printk("MJ bp_write_reg down \n");
     spin_lock_irqsave(&pbpctl_dev->bypass_wr_lock, flags);
 
     x710_gpio_clear_sda_scl(pbpctl_dev);
-    printk("MJ x710_gpio_clear_sda_scl_1 down \n");
+    //printk("MJ x710_gpio_clear_sda_scl_1 down \n");
     usec_delay_bp(CMND_INTERVAL);
 
     bp_write_bit(pbpctl_dev, ctrl_ext, SYNC_CMD_VAL, SYNC_CMD_LEN);
@@ -5789,9 +5789,9 @@ static void bp_write_reg(bpctl_dev_t* pbpctl_dev, unsigned char value, unsigned 
     bp_write_bit(pbpctl_dev, ctrl_ext, addr, ADDR_CMD_LEN);
 
     bp_write_bit(pbpctl_dev, ctrl_ext, value, WR_DATA_LEN);
-    printk("MJ bp_write_bit down \n");
+    //printk("MJ bp_write_bit down \n");
     x710_gpio_clear_sda_scl(pbpctl_dev);
-    printk("MJ x710_gpio_clear_sda_scl_2 down \n");
+    //printk("MJ x710_gpio_clear_sda_scl_2 down \n");
     usec_delay_bp(CMND_INTERVAL);
 
     spin_unlock_irqrestore(&pbpctl_dev->bypass_wr_lock, flags);
@@ -5801,11 +5801,11 @@ static void wx_bp_write_reg(bpctl_dev_t* pbpctl_dev, unsigned char value, unsign
 {
     unsigned long flags;
     uint32_t ctrl_ext = 0;//, ctrl = 0;
-    printk("MJ wx_bp_write_reg down \n");
+    //printk("MJ wx_bp_write_reg down \n");
     spin_lock_irqsave(&pbpctl_dev->bypass_wr_lock, flags);
 
     sp1000_gpio_clear_sda_scl(pbpctl_dev);
-    printk("MJ sp1000_gpio_clear_sda_scl down \n");
+    //printk("MJ sp1000_gpio_clear_sda_scl down \n");
     usec_delay_bp(CMND_INTERVAL);
 
     sp1000_bp_write_bit(pbpctl_dev, ctrl_ext, SYNC_CMD_VAL, SYNC_CMD_LEN);
@@ -5813,31 +5813,31 @@ static void wx_bp_write_reg(bpctl_dev_t* pbpctl_dev, unsigned char value, unsign
     sp1000_bp_write_bit(pbpctl_dev, ctrl_ext, addr, ADDR_CMD_LEN);
 
     sp1000_bp_write_bit(pbpctl_dev, ctrl_ext, value, WR_DATA_LEN);
-    printk("MJ sp1000_bp_write_bit down \n");
+    //printk("MJ sp1000_bp_write_bit down \n");
     sp1000_gpio_clear_sda_scl(pbpctl_dev);
-    printk("MJ sp1000_gpio_clear_sda_scl down \n");
+    //printk("MJ sp1000_gpio_clear_sda_scl down \n");
     usec_delay_bp(CMND_INTERVAL);
 
     spin_unlock_irqrestore(&pbpctl_dev->bypass_wr_lock, flags);
 }
 
 static void bp_write_data(bpctl_dev_t* pbpctl_dev, unsigned char value) {
-    printk("MJ bp_write_data \n");
+    //printk("MJ bp_write_data \n");
     if(pbpctl_dev->lr_bp8599){
         bp_write_reg(pbpctl_dev, value, CMND_REG_ADDR);
-        printk("lr_bp8599 I2C \n");
+        //printk("lr_bp8599 I2C \n");
     }else{
         wx_bp_write_reg(pbpctl_dev, value, CMND_REG_ADDR);
-        printk("BPSP10002S I2C \n");
+        //printk("BPSP10002S I2C \n");
     }
 }
 
 
 int bp_cmnd_on(bpctl_dev_t *pbpctl_dev){
     int ret=BP_NOT_CAP;
-    printk("MJ bp_cmnd_on \n");
+    //printk("MJ bp_cmnd_on \n");
     if (pbpctl_dev->func==0 || pbpctl_dev->func==2){
-        printk("MJ pbpctl_dev->func: %d \n", pbpctl_dev->func);
+        //printk("MJ pbpctl_dev->func: %d \n", pbpctl_dev->func);
         bp_write_data(pbpctl_dev,CMND_ON);
         ret=0;
     }
@@ -5876,10 +5876,10 @@ int sp1000_gpio_set_sda_scl_on(bpctl_dev_t* pbp_dev)
         //set sda(gpio_4), set scl(gpio_5)
         writel(0x30, (void *)((pbp_dev->mem_map) + NGBE_GPIO_DDR));
         readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DDR);//flush write op
-        printk("0x14804: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DDR));
+        //printk("0x14804: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DDR));
         writel(0x00, (void *)((pbp_dev->mem_map) + NGBE_GPIO_DR));
         readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DR);//flush write op
-        printk("0x14800: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DR));
+        //printk("0x14800: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DR));
         ret = 0;
     }
     else if (pbp_dev->func==2){
@@ -5904,10 +5904,10 @@ int sp1000_gpio_set_sda_scl_off(bpctl_dev_t* pbp_dev)
         //set sda(gpio_4), set scl(gpio_5)
         writel(0x33, (void *)((pbp_dev->mem_map) + NGBE_GPIO_DDR));
         readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DDR);//flush write op
-        printk("0x14804: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DDR));
+        //printk("0x14804: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DDR));
         writel(0x30, (void *)((pbp_dev->mem_map) + NGBE_GPIO_DR));
         readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DR);//flush write op
-        printk("0x14800: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DR));
+        //printk("0x14800: %x \n", readl((void *)(pbp_dev->mem_map) + NGBE_GPIO_DR));
         ret = 0;
     }
     else if (pbp_dev->func==2){
@@ -5924,7 +5924,7 @@ int sp1000_gpio_set_sda_scl_off(bpctl_dev_t* pbp_dev)
 
 int bp_set_bypass_fn(bpctl_dev_t *pbpctl_dev, int bypass_mode){
     int ret = 0;
-    printk("MJ LR-Link bp_set_bypass_fn function \n");
+    //printk("MJ LR-Link bp_set_bypass_fn function \n");
     // trace("bp_set_bypass_fn\n");//lan
 
     if ((ret = bp_cmnd_on(pbpctl_dev)) < 0)
@@ -5932,21 +5932,21 @@ int bp_set_bypass_fn(bpctl_dev_t *pbpctl_dev, int bypass_mode){
 
     if (!bypass_mode){
         ret = bp_bypass_off(pbpctl_dev);
-        printk("MJ LR-Link bp_bypass_off function down \n");
+        //printk("MJ LR-Link bp_bypass_off function down \n");
     } else {
         ret = bp_bypass_on(pbpctl_dev);
-        printk("MJ LR-Link bp_bypass_on function down \n");
+        //printk("MJ LR-Link bp_bypass_on function down \n");
     }
 
     bp_cmnd_off(pbpctl_dev);
-    printk("MJ LR-Link bp_cmnd_off function down \n");
+    //printk("MJ LR-Link bp_cmnd_off function down \n");
 
     return ret;
 }
 
 int wx_set_bypass_fn(bpctl_dev_t *pbpctl_dev, int bypass_mode){
     int ret = 0;
-    printk("MJ WangXun wx_set_bypass_fn function \n");
+    //printk("MJ WangXun wx_set_bypass_fn function \n");
     // trace("bp_set_bypass_fn\n");//lan
 
     if ((ret = bp_cmnd_on(pbpctl_dev)) < 0)
@@ -5956,12 +5956,12 @@ int wx_set_bypass_fn(bpctl_dev_t *pbpctl_dev, int bypass_mode){
         ret = bp_bypass_off(pbpctl_dev);
         // ret = sp1000_gpio_set_sda_scl_off(pbpctl_dev);
         // msec_delay_bp(LATCH_DELAY);
-        printk("MJ WangXun sp1000_gpio_set_sda_scl_off function down \n");
+        //printk("MJ WangXun sp1000_gpio_set_sda_scl_off function down \n");
     } else {
         ret = bp_bypass_on(pbpctl_dev);
         // ret = sp1000_gpio_set_sda_scl_on(pbpctl_dev);
         // msec_delay_bp(LATCH_DELAY);
-        printk("MJ WangXun sp1000_gpio_set_sda_scl_on function down \n");
+        //printk("MJ WangXun sp1000_gpio_set_sda_scl_on function down \n");
     }
 
     bp_cmnd_off(pbpctl_dev);
@@ -6132,7 +6132,7 @@ static int bpsp10002s_read_reg(bpctl_dev_t* pbpctl_dev, unsigned char addr)
 
 int bp_get_bypass_fn(bpctl_dev_t *pbpctl_dev){
     int reg_data;
-    printk("MJ LR-Link bp_get_bypass_fn function \n");
+    //printk("MJ LR-Link bp_get_bypass_fn function \n");
     //return(bp_bypass_status(pbp_dev));
     if ((pbpctl_dev->func == 0) || (pbpctl_dev->func == 2)){
         reg_data = bp_read_reg(pbpctl_dev, STATUS_REG_ADDR);
@@ -6726,7 +6726,7 @@ int set_bypass_pwup_fn(bpctl_dev_t *pbpctl_dev, int bypass_mode){
 		if (!(pbpctl_dev_c=get_status_port_fn(pbpctl_dev))) {
 			return -1;
 		}
-		printk("set_bypass_pwup_fn %d time \t func_p = %d \n",count++,pbpctl_dev->func_p);
+		//printk("set_bypass_pwup_fn %d time \t func_p = %d \n",count++,pbpctl_dev->func_p);
 		if(pbpctl_dev->func_p == 1 && pbpctl_dev->device == 0x1001){
 			return -1;
 		}
@@ -6817,17 +6817,17 @@ int set_bypass_wd_fn(bpctl_dev_t *pbpctl_dev, int timeout){
 		bp_cmd_buf.cmd.cmd_dev_num= (pbpctl_dev->func_p == 0)? 0:1;
 		bp_cmd_buf.cmd.cmd_id=CMD_SET_BYPASS_WD;
 		bp_cmd_buf.cmd.cmd_data.timeout=htonl(timeout);
-		printk("MJ 1 set_bypass_wd_fn wx %04x \n",bp_cmd_buf.cmd.cmd_data.timeout);
+		//printk("MJ 1 set_bypass_wd_fn wx %04x \n",bp_cmd_buf.cmd.cmd_data.timeout);
 
 		if (!(pbpctl_dev_c=get_status_port_fn(pbpctl_dev))) {
-			printk("MJ 2 get_status_port_fn == NULL \n");
+			//printk("MJ 2 get_status_port_fn == NULL \n");
 			return -1;
 		}
 
 		if(bp_cmd_request(pbpctl_dev_c, &bp_cmd_buf, &bp_rsp_buf)) {
 			if (bp_rsp_buf.rsp.rsp_id == BP_ERR_OK) {
 					ret = timeout;// ntohl(bp_rsp_buf.rsp.rsp_data.timeout_set);
-					printk("ret = %d \n",ret);
+					//printk("ret = %d \n",ret);
 					if(ret) {
 						pbpctl_dev->wdt_status=WDT_STATUS_EN;
 					}
@@ -7801,7 +7801,7 @@ int get_bp_self_test_fn(bpctl_dev_t *pbpctl_dev){
 int get_bypass_caps_fn(bpctl_dev_t *pbpctl_dev){
 
     if (!pbpctl_dev) {
-		printk("MJ get_bypass_caps_fn jumpout\n");
+		//printk("MJ get_bypass_caps_fn jumpout\n");
 		return -1;
 	}
 
@@ -7825,19 +7825,19 @@ int get_bypass_caps_fn(bpctl_dev_t *pbpctl_dev){
 		bp_cmd_buf.cmd.cmd_dev_num= (pbpctl_dev_m->func_p == 1)? 0:1;
 		bp_cmd_buf.cmd.cmd_id=CMD_GET_BYPASS_CAPS;
 		if (!(pbpctl_dev_c=get_status_port_fn(pbpctl_dev))) {
-			printk("MJ get_status_port_fn jumpout\n");
+			//printk("MJ get_status_port_fn jumpout\n");
 			return -1;
 		}
 
 		if(bp_cmd_request(pbpctl_dev_c, &bp_cmd_buf, &bp_rsp_buf)) {
 			if (bp_rsp_buf.rsp.rsp_id == BP_ERR_OK) {
 				ret=(ntohl(bp_rsp_buf.rsp.rsp_data.bypass_caps));
-				printk("MJ (ntohl(bp_rsp_buf.rsp.rsp_data.bypass_caps)) jumpout ret = %d \n",ret);
+				//printk("MJ (ntohl(bp_rsp_buf.rsp.rsp_data.bypass_caps)) jumpout ret = %d \n",ret);
 				if ((is_bypass_fn(pbpctl_dev))!=1) {
 					int ret1=0;
 					if(ret&TX_CTL_CAP) {
 						ret1=(TX_CTL_CAP|TX_STATUS_CAP);
-						printk("MJ TX_CTL_CAP=%d jumpout ret1 = %d \n",ret1,(TX_CTL_CAP|TX_STATUS_CAP));
+						//printk("MJ TX_CTL_CAP=%d jumpout ret1 = %d \n",ret1,(TX_CTL_CAP|TX_STATUS_CAP));
 					}
 					return ret1;
 					
@@ -7847,7 +7847,7 @@ int get_bypass_caps_fn(bpctl_dev_t *pbpctl_dev){
 		return ret;
 
 	} else {
-		printk("MJ return(pbpctl_dev->bp_caps); jumpout\n");
+		//printk("MJ return(pbpctl_dev->bp_caps); jumpout\n");
 		return(pbpctl_dev->bp_caps);
 	}
 }
@@ -9912,10 +9912,10 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(SET_BYPASS_PWOFF) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_set_bypass_at_power_off(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Lr-Link SET_BYPASS_PWOFF: %d \n", SET_BYPASS_PWOFF);
+            //printk("MJ Lr-Link SET_BYPASS_PWOFF: %d \n", SET_BYPASS_PWOFF);
         } else {
             bpctl_cmd.status= set_bypass_pwoff_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Silicom SET_BYPASS_PWOFF: %d \n", SET_BYPASS_PWOFF);
+            //printk("MJ Silicom SET_BYPASS_PWOFF: %d \n", SET_BYPASS_PWOFF);
         }
         
         break;
@@ -9923,10 +9923,10 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(GET_BYPASS_PWOFF) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_get_bypass_at_power_off(pbpctl_dev);
-            printk("MJ Lr-Link GET_BYPASS_PWOFF: %d \n", GET_BYPASS_PWOFF);
+            //printk("MJ Lr-Link GET_BYPASS_PWOFF: %d \n", GET_BYPASS_PWOFF);
         } else {
             bpctl_cmd.status= get_bypass_pwoff_fn(pbpctl_dev);
-            printk("MJ Silicom GET_BYPASS_PWOFF: %d \n", GET_BYPASS_PWOFF);
+            //printk("MJ Silicom GET_BYPASS_PWOFF: %d \n", GET_BYPASS_PWOFF);
         }
         
         break;
@@ -9934,42 +9934,42 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(SET_BYPASS_PWUP) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_set_bypass_at_power_on(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Lr-Link SET_BYPASS_PWUP: %d \n", SET_BYPASS_PWUP);
+            //printk("MJ Lr-Link SET_BYPASS_PWUP: %d \n", SET_BYPASS_PWUP);
         } else {
             bpctl_cmd.status= set_bypass_pwup_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
-		printk("MJ Silicom bpctl_cmd.status= %d \n", bpctl_cmd.status);
-            printk("MJ Silicom SET_BYPASS_PWUP: %d \n", SET_BYPASS_PWUP);
+		//printk("MJ Silicom bpctl_cmd.status= %d \n", bpctl_cmd.status);
+            //printk("MJ Silicom SET_BYPASS_PWUP: %d \n", SET_BYPASS_PWUP);
         }
         break;
 
     case IOCTL_TX_MSG(GET_BYPASS_PWUP) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_get_bypass_at_power_on(pbpctl_dev);
-            printk("MJ Lr-Link GET_BYPASS_PWUP: %d \n", GET_BYPASS_PWUP);
+            //printk("MJ Lr-Link GET_BYPASS_PWUP: %d \n", GET_BYPASS_PWUP);
         } else {
             bpctl_cmd.status= get_bypass_pwup_fn(pbpctl_dev);
-            printk("MJ Silicom GET_BYPASS_PWUP: %d \n", GET_BYPASS_PWUP);
+            //printk("MJ Silicom GET_BYPASS_PWUP: %d \n", GET_BYPASS_PWUP);
         }
         break;
 
     case IOCTL_TX_MSG(SET_BYPASS_WD) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_set_bypass_wd(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Lr-Link SET_BYPASS_WD: %d \n", SET_BYPASS_WD);
+            //printk("MJ Lr-Link SET_BYPASS_WD: %d \n", SET_BYPASS_WD);
         } else {
             bpctl_cmd.status= set_bypass_wd_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Silicom SET_BYPASS_WD: %d \n", SET_BYPASS_WD);
-            printk("MJ Silicom set_bypass_wd_fn bpctl_cmd.status = %d \n", bpctl_cmd.status);
+            //printk("MJ Silicom SET_BYPASS_WD: %d \n", SET_BYPASS_WD);
+            //printk("MJ Silicom set_bypass_wd_fn bpctl_cmd.status = %d \n", bpctl_cmd.status);
         }
         break;
 
     case IOCTL_TX_MSG(GET_BYPASS_WD) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_get_bypass_wd(pbpctl_dev,(int *)&(bpctl_cmd.data[0]));
-            printk("MJ Lr-Link GET_BYPASS_WD: %d \n", GET_BYPASS_WD);
+            //printk("MJ Lr-Link GET_BYPASS_WD: %d \n", GET_BYPASS_WD);
         } else {
             bpctl_cmd.status= get_bypass_wd_fn(pbpctl_dev,(int *)&(bpctl_cmd.data[0]));
-            printk("MJ Silicom GET_BYPASS_WD: %d \n", GET_BYPASS_WD);
+            //printk("MJ Silicom GET_BYPASS_WD: %d \n", GET_BYPASS_WD);
         }
         break;
 
@@ -9980,10 +9980,10 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(RESET_BYPASS_WD_TIMER) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_reset_bypass_wd(pbpctl_dev);
-            printk("MJ Lr-Link RESET_BYPASS_WD_TIMER: %d \n", RESET_BYPASS_WD_TIMER);
+            //printk("MJ Lr-Link RESET_BYPASS_WD_TIMER: %d \n", RESET_BYPASS_WD_TIMER);
         } else {
             bpctl_cmd.status= reset_bypass_wd_timer_fn(pbpctl_dev);
-            printk("MJ Silicom RESET_BYPASS_WD_TIMER: %d \n", RESET_BYPASS_WD_TIMER);
+            //printk("MJ Silicom RESET_BYPASS_WD_TIMER: %d \n", RESET_BYPASS_WD_TIMER);
         }
         break;
 
@@ -9994,20 +9994,20 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(SET_STD_NIC) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_set_std_nic(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Lr-Link SET_STD_NIC: %d \n", SET_STD_NIC);
+            //printk("MJ Lr-Link SET_STD_NIC: %d \n", SET_STD_NIC);
         } else {
             bpctl_cmd.status= set_std_nic_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Silicom SET_STD_NIC: %d \n", SET_STD_NIC);
+            //printk("MJ Silicom SET_STD_NIC: %d \n", SET_STD_NIC);
         }
         break;
 
     case IOCTL_TX_MSG(GET_STD_NIC) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_get_std_nic(pbpctl_dev);
-            printk("MJ Lr-Link GET_STD_NIC: %d \n", GET_STD_NIC);
+            //printk("MJ Lr-Link GET_STD_NIC: %d \n", GET_STD_NIC);
         } else {
             bpctl_cmd.status= get_std_nic_fn(pbpctl_dev);
-            printk("MJ Silicom GET_STD_NIC: %d \n", GET_STD_NIC);
+            //printk("MJ Silicom GET_STD_NIC: %d \n", GET_STD_NIC);
         }
         break;
 
@@ -10064,30 +10064,30 @@ static long device_ioctl(struct file *file, /* ditto */
         break;
 
     case IOCTL_TX_MSG(GET_BYPASS):
-        printk("MJ IOCTL_TX_MSG(GET_BYPASS): %d \n", GET_BYPASS);
+        //printk("MJ IOCTL_TX_MSG(GET_BYPASS): %d \n", GET_BYPASS);
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_get_bypass_fn(pbpctl_dev);
-            printk("MJ Lr-link GET_BYPASS: %d \n", GET_BYPASS);
+            //printk("MJ Lr-link GET_BYPASS: %d \n", GET_BYPASS);
         } else{
             bpctl_cmd.status= get_bypass_fn(pbpctl_dev);
-            printk("MJ Silicom GET_BYPASS: %d \n", GET_BYPASS);
+            //printk("MJ Silicom GET_BYPASS: %d \n", GET_BYPASS);
         } 
         break;
 
     // TODO_LR_or_Silicom bp_set_bypass_fn
     case IOCTL_TX_MSG(SET_BYPASS):
-        printk("MJ IOCTL_TX_MSG(SET_BYPASS): %d \n", SET_BYPASS);
+        //printk("MJ IOCTL_TX_MSG(SET_BYPASS): %d \n", SET_BYPASS);
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_set_bypass_fn(pbpctl_dev, bpctl_cmd.in_param[2]); 
-            printk("MJ Lr-link SET_BYPASS: %d \n", SET_BYPASS);
+            //printk("MJ Lr-link SET_BYPASS: %d \n", SET_BYPASS);
         } else if(bpctl_dev_arr[dev_idx].bp_sp1000_2s){
             // bpctl_cmd.status= wx_set_bypass_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
             bpctl_cmd.status = set_bypass_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ bpctl_cmd.status = %d \n", bpctl_cmd.status);
-            printk("MJ SP1000-2S SET_BYPASS: %d \n", SET_BYPASS);
+            //printk("MJ bpctl_cmd.status = %d \n", bpctl_cmd.status);
+            //printk("MJ SP1000-2S SET_BYPASS: %d \n", SET_BYPASS);
         } else {
             bpctl_cmd.status= set_bypass_fn(pbpctl_dev, bpctl_cmd.in_param[2]);
-            printk("MJ Silicom SET_BYPASS: %d \n", SET_BYPASS);
+            //printk("MJ Silicom SET_BYPASS: %d \n", SET_BYPASS);
         }
         break;
 
@@ -10102,10 +10102,10 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(GET_BYPASS_SLAVE):
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= bp_get_bypass_slave(pbpctl_dev, &pbpctl_dev_out);
-            printk("MJ Lr-link GET_BYPASS_SLAVE: %d \n", GET_BYPASS_SLAVE);
+            //printk("MJ Lr-link GET_BYPASS_SLAVE: %d \n", GET_BYPASS_SLAVE);
         } else {
             bpctl_cmd.status= get_bypass_slave_fn(pbpctl_dev, &pbpctl_dev_out);
-            printk("MJ Silicom GET_BYPASS_SLAVE: %d \n", GET_BYPASS_SLAVE);
+            //printk("MJ Silicom GET_BYPASS_SLAVE: %d \n", GET_BYPASS_SLAVE);
         }
         if (bpctl_cmd.status==1) {
             bpctl_cmd.out_param[4]= pbpctl_dev_out->bus;
@@ -10118,10 +10118,10 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(IS_BYPASS):
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status= lr_is_bypass_fn(pbpctl_dev); 
-            printk("MJ Lr-link IS_BYPASS: %d \n", IS_BYPASS);
+            //printk("MJ Lr-link IS_BYPASS: %d \n", IS_BYPASS);
         } else {
             bpctl_cmd.status= is_bypass_fn(pbpctl_dev);
-            printk("MJ Silicom/WangXun IS_BYPASS: %d \n", IS_BYPASS);
+            //printk("MJ Silicom/WangXun IS_BYPASS: %d \n", IS_BYPASS);
         }
         break;
     case IOCTL_TX_MSG(SET_TX):
@@ -10141,19 +10141,19 @@ static long device_ioctl(struct file *file, /* ditto */
     case IOCTL_TX_MSG(SET_DISC) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status=bp_set_disc(pbpctl_dev,bpctl_cmd.in_param[2]);
-            printk("MJ Lr-link SET_DISC: %d \n", SET_DISC);
+            //printk("MJ Lr-link SET_DISC: %d \n", SET_DISC);
         } else {
             bpctl_cmd.status=set_disc_fn(pbpctl_dev,bpctl_cmd.in_param[2]);
-            printk("MJ Silicom SET_DISC: %d \n", SET_DISC);
+            //printk("MJ Silicom SET_DISC: %d \n", SET_DISC);
         }
         break;
     case IOCTL_TX_MSG(GET_DISC) :
         if(bpctl_dev_arr[dev_idx].lr_bp8599){
             bpctl_cmd.status=bp_get_disc(pbpctl_dev);
-            printk("MJ Lr-Link GET_DISC: %d \n", GET_DISC);
+            //printk("MJ Lr-Link GET_DISC: %d \n", GET_DISC);
         } else {
             bpctl_cmd.status=get_disc_fn(pbpctl_dev);
-            printk("MJ Silicom GET_DISC: %d \n", GET_DISC);
+            //printk("MJ Silicom GET_DISC: %d \n", GET_DISC);
         }
         break;
     case IOCTL_TX_MSG(GET_DISC_CHANGE) :
@@ -11295,7 +11295,7 @@ static int v2_bypass_init_module(void)
         }
     }
 
-    printk("MJ device number: %d \n", device_num);
+    //printk("MJ device number: %d \n", device_num);
     if (!device_num) {
         printk("No such device\n"); 
         unregister_chrdev(major_num, DEVICE_NAME);
@@ -11304,14 +11304,14 @@ static int v2_bypass_init_module(void)
 
 
     bpctl_dev_arr=kmalloc ((device_num)  * sizeof (bpctl_dev_t), GFP_KERNEL);
-    printk("MJ 设备空间分配完成... \n");
+    //printk("MJ 设备空间分配完成... \n");
     if (!bpctl_dev_arr) {
         printk("Allocation error\n"); 
         unregister_chrdev(major_num, DEVICE_NAME);
         return -1;
     }
     memset(bpctl_dev_arr,0,((device_num)  * sizeof (bpctl_dev_t)));
-    printk("MJ 设备空间初始化完成... \n");
+    //printk("MJ 设备空间初始化完成... \n");
     pdev1=NULL;
     for (idx = 0; tx_ctl_pci_tbl[idx].vendor; idx++) {
         while ((pdev1=pci_get_subsys(tx_ctl_pci_tbl[idx].vendor,
@@ -11350,7 +11350,7 @@ static int v2_bypass_init_module(void)
 	    }
 	    else{
             bpctl_dev_arr[idx_dev].func= PCI_FUNC(pdev1->devfn);
-            printk("FUNC: %d \n", bpctl_dev_arr[idx_dev].func);
+            //printk("FUNC: %d \n", bpctl_dev_arr[idx_dev].func);
         }
         bpctl_dev_arr[idx_dev].slot= PCI_SLOT(pdev1->devfn); 
         bpctl_dev_arr[idx_dev].bus= pdev1->bus->number;
@@ -11393,16 +11393,16 @@ static int v2_bypass_init_module(void)
         if (LRBP8599(bpctl_dev_arr[idx_dev].subdevice, bpctl_dev_arr[idx_dev].device) ||
             LRBPNV7102S(bpctl_dev_arr[idx_dev].subdevice, bpctl_dev_arr[idx_dev].device)){
             bpctl_dev_arr[idx_dev].lr_bp8599 = 1;
-            printk("MJ lr_bp8599: %d \n", bpctl_dev_arr[idx_dev].lr_bp8599);
+            //printk("MJ lr_bp8599: %d \n", bpctl_dev_arr[idx_dev].lr_bp8599);
         }
 
         if (LRBP_SP1000_2S_IF_SERIES(bpctl_dev_arr[idx_dev].subdevice,bpctl_dev_arr[idx_dev].device)){
             bpctl_dev_arr[idx_dev].bp_sp1000_2s = 1;
             bpctl_dev_arr[idx_dev].func_p = bpctl_dev_arr[idx_dev].func;
-		    printk("BPSP10-2S func_p = %d \n",bpctl_dev_arr[idx_dev].func_p);
+		    //printk("BPSP10-2S func_p = %d \n",bpctl_dev_arr[idx_dev].func_p);
             bpctl_dev_arr[idx_dev].slot_p = bpctl_dev_arr[idx_dev].slot; 
             bpctl_dev_arr[idx_dev].bus_p = bpctl_dev_arr[idx_dev].bus;
-            printk("MJ bp_sp1000_2s: %d \n", bpctl_dev_arr[idx_dev].bp_sp1000_2s);
+            //printk("MJ bp_sp1000_2s: %d \n", bpctl_dev_arr[idx_dev].bp_sp1000_2s);
         }
 
         if (bpctl_dev_arr[idx_dev].bp_10g9) {
@@ -11427,7 +11427,7 @@ static int v2_bypass_init_module(void)
                     }
 				bpctl_dev_arr[idx_dev].slot_p = (ctrl >> 3) & 0x1f; 
 				bpctl_dev_arr[idx_dev].bus_p = (ctrl >> 8) & 0xff;
-				printk("BP350-2S func_p = %d \n",bpctl_dev_arr[idx_dev].func_p);
+				//printk("BP350-2S func_p = %d \n",bpctl_dev_arr[idx_dev].func_p);
 			}
 
 			else if (bpctl_dev_arr[idx_dev].bp_40g) {
@@ -11519,7 +11519,7 @@ static int v2_bypass_init_module(void)
         }
     }
 
-    printk("MJ idx_dev_num: %d \n", idx_dev);
+    //printk("MJ idx_dev_num: %d \n", idx_dev);
     if_scan_init();
     // printk("MJ if_scan_init \n");
 
@@ -11537,7 +11537,7 @@ static int v2_bypass_init_module(void)
         for (idx_dev = 0; ((idx_dev<device_num)&&(bpctl_dev_arr[idx_dev].pdev!=NULL)); idx_dev++) 
        {
             // if(bpctl_dev_arr[idx_dev].lr_bp8599) continue;
-            printk("MJ The %d time.\n", num_time);
+            //printk("MJ The %d time.\n", num_time);
             num_time++;
 			{
 				bpctl_dev_t *pbpctl_dev_c= NULL;
@@ -11555,13 +11555,13 @@ static int v2_bypass_init_module(void)
                     if(bpctl_dev_arr[idx_dev].lr_bp8599 || bpctl_dev_arr[idx_dev].bp_sp1000_2s){
                         if((bpctl_dev_arr[idx_dev].lr_bp8599)&&(bpctl_dev_arr[idx_dev].func==0 || bpctl_dev_arr[idx_dev].func==2)){
                             unsigned int ctrl_bp8599 = BP8599_RD_REG(&bpctl_dev_arr[idx_dev]);
-                            printk("readl 0x0008817C value: %d", ctrl_bp8599);
+                            //printk("readl 0x0008817C value: %d", ctrl_bp8599);
 			                bp_read_reg(&bpctl_dev_arr[idx_dev], STATUS_REG_ADDR);
                             continue;
                         } 
                         if((bpctl_dev_arr[idx_dev].bp_sp1000_2s)&&(bpctl_dev_arr[idx_dev].func==0 || bpctl_dev_arr[idx_dev].func==2)){
                             unsigned int ctrl_bpsp1000 = BPSP10002S_RD_REG(&bpctl_dev_arr[idx_dev], DR);
-                            printk("MJ readl 0x14804 value: %x \n", ctrl_bpsp1000);
+                            //printk("MJ readl 0x14804 value: %x \n", ctrl_bpsp1000);
                             bpsp10002s_read_reg(&bpctl_dev_arr[idx_dev], STATUS_REG_ADDR);
                             bypass_caps_init(&bpctl_dev_arr[idx_dev]);
                             continue;
@@ -11636,7 +11636,7 @@ static int v2_bypass_init_module(void)
 
 
             bypass_caps_init(&bpctl_dev_arr[idx_dev]);
-		printk("ext version: 0x%x\n",bpctl_dev_arr[idx_dev].bp_ext_ver);
+		//printk("ext version: 0x%x\n",bpctl_dev_arr[idx_dev].bp_ext_ver);
 			get_tpl_fn(&bpctl_dev_arr[idx_dev]);
             init_bypass_wd_auto(&bpctl_dev_arr[idx_dev]);
             init_bypass_tpl_auto(&bpctl_dev_arr[idx_dev]);
@@ -11698,11 +11698,11 @@ static int v2_bypass_init_module(void)
     inter_module_register("get_bypass_info_sd", THIS_MODULE, &get_bypass_info_sd);
     inter_module_register("bp_if_scan_sd", THIS_MODULE, &bp_if_scan_sd);
 
-    printk("MJ inter_module_register \n");
+    //printk("MJ inter_module_register \n");
 #endif
     register_netdevice_notifier(&bp_notifier_block);
     register_reboot_notifier(&bp_reboot_block);
-    printk("MJ register_reboot_notifier \n");
+    //printk("MJ register_reboot_notifier \n");
 #ifdef BP_PROC_SUPPORT
     {
         int i=0;
