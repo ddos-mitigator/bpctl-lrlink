@@ -2176,6 +2176,7 @@ static long bp_device_ioctl(struct file *file, /* ditto */
         break;
 
     case IOCTL_TX_MSG(GET_BYPASS_WD) :
+    case IOCTL_TX_MSG(GET_WD_EXPIRE_TIME) :
         bpctl_cmd.status= bp_get_bypass_wd(pbp_dev,(int *)&(bpctl_cmd.data[0]));
         break;   
 
